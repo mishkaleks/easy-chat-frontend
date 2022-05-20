@@ -36,4 +36,27 @@ Frontend работает с [серверной частью](https://github.co
 
 `$ npm i @mui/material @mui/styles @emotion/react @emotion/styled`
 
+- Подключить внешний интерфейс к серверной части.
+
+Компонент `Chat` используется для подключения к серверу. `useLocation` c `react-router-dom` хранит информацию о 
+url-адресе, который передаем с комплнента `App` в `Chat` используя роутинг.
+
+```javascript
+{
+  hash: ""
+  key: "kbwatlxp"
+  pathname: "/chat"
+  search: "?name=Tom&room=DevCamp"
+  state: null
+}
+```
+
+С помощью `queryString` мы получаем параметры `name` и `room`.
+
+Создать экземпляр `socket` и передать конечную точку сервера.
+
+```javascript
+socket = io(ENDPOINT)
+```
+
 **Остальные этапы создания внешнего интерфейса будут добавляться по мере развития проекта*.
