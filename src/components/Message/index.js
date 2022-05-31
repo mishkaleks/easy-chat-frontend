@@ -1,6 +1,7 @@
 // base
 import React from 'react'
 import PropTypes from 'prop-types'
+import classNames from 'classnames'
 
 // material-ui
 import { makeStyles } from '@mui/styles'
@@ -10,11 +11,24 @@ import Typography from '@mui/material/Typography'
 import { ReactComponent as IconAvatar } from '../../public/icons/icon_bot.svg'
 
 const useStyles = makeStyles(() => ({
+  wrapperRoot: {
+    display: 'flex',
+    marginBottom: '60px'
+  },
+  wrapperMyRoot: {
+    justifyContent: 'flex-end'
+  },
+  marginBottom: {
+    marginBottom: '6px'
+  },
   root: {
     display: 'flex',
     alignItems: 'flex-end',
-    maxWidth: '600px',
-    marginBottom: '60px'
+    maxWidth: '600px'
+  },
+  myRoot: {
+    maxWidth: '536px',
+    marginLeft: '64px'
   },
   wrapperAvatar: {
     display: 'flex',
@@ -35,37 +49,79 @@ const useStyles = makeStyles(() => ({
     padding: '19px 38px',
     background: '#F5F5F5'
   },
+  myMessageBlock: {
+    borderRadius: '16px 16px 0 16px',
+    background: '#21978B'
+  },
   username: {
     marginBottom: '5px',
+    fontFamily: 'Prompt !important',
+    fontWeight: '400 !important',
+    fontSize: '14px !important',
+    lineHeight: '22px !important',
     color: '#21978B'
   },
   message: {
-    fontSize: '14px',
-    lineHeight: '22px'
+    fontFamily: 'Prompt !important',
+    fontWeight: '400 !important',
+    fontSize: '14px !important',
+    lineHeight: '22px !important'
+  },
+  myMessage: {
+    color: '#FBFBFD'
   }
 }))
 
 const Message = (props) => {
-  const { message } = props
+  const { name, message, messages, index } = props
   const { user, text } = message
+  const isMyMessage = name === user
+  const lengthMessages = messages.length
+  const isLastMessage = lengthMessages - 1 === index
+  const isGroupMessage = isLastMessage
+    ? false
+    : messages[index + 1].user === user
 
   const classes = useStyles()
 
   return (
-    <div className={classes.root}>
-      <div className={classes.wrapperAvatar}>
-        <IconAvatar className={classes.avatar} />
-      </div>
-      <div className={classes.messageBlock}>
-        <Typography component="div" className={classes.username}>{user}</Typography>
-        <Typography component="div" className={classes.message}>{text}</Typography>
+    <div className={classNames(
+      classes.wrapperRoot,
+      isMyMessage && classes.wrapperMyRoot,
+      isGroupMessage && classes.marginBottom)}
+    >
+      <div className={classNames(classes.root, isMyMessage && classes.myRoot)}>
+        {!isMyMessage && (
+          <div className={classes.wrapperAvatar}>
+            <IconAvatar className={classes.avatar} />
+          </div>
+        )}
+        <div className={classNames(classes.messageBlock, isMyMessage && classes.myMessageBlock)}>
+          {!isMyMessage && (
+            <Typography
+              component="div"
+              className={classes.username}
+            >
+              {user}
+            </Typography>
+          )}
+          <Typography
+            component="div"
+            className={classNames(classes.message, isMyMessage && classes.myMessage)}
+          >
+            {text}
+          </Typography>
+        </div>
       </div>
     </div>
   )
 }
 
 Message.propTypes = {
-  message: PropTypes.object.isRequired
+  name: PropTypes.string.isRequired,
+  message: PropTypes.object.isRequired,
+  messages: PropTypes.array.isRequired,
+  index: PropTypes.number.isRequired
 }
 
 export default Message
