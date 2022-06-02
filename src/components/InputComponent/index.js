@@ -53,8 +53,8 @@ const InputComponent = (props) => {
 
 InputComponent.propTypes = {
   customStyles: PropTypes.object,
-  error: PropTypes.bool.isRequired,
-  helperText: PropTypes.string.isRequired,
+  error: PropTypes.bool,
+  helperText: PropTypes.string,
   handleChangeField: PropTypes.func.isRequired
 }
 

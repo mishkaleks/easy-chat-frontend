@@ -9,27 +9,45 @@ import { makeStyles } from '@mui/styles'
 
 // components
 import Message from '../../components/Message'
+import SendingMessage from '../../components/SendingMessage'
 
 const useStyles = makeStyles(() => ({
   root: {
-    padding: '60px 36px'
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100vh'
+  },
+  messageContainer: {
+    flexGrow: 1,
+    padding: '60px 36px',
+    overflowY: 'auto',
+    '@media only screen and (max-width: 575px)': {
+      padding: '30px 12px'
+    }
+  },
+  wrapperSendingMessage: {
+    flexShrink: 0,
+    padding: '12px 38px',
+    boxShadow: '0px 0px 1px rgba(0, 0, 0, 0.25)'
   }
 }))
+
+let socket
 
 const Chat = () => {
   const classes = useStyles()
 
-  let socket
   const initialState = {
     name: '',
     room: '',
-    messages: []
+    textMessage: ''
   }
   const ENDPOINT = 'http://localhost:5000'
 
   const location = useLocation()
   const [state, setState] = useState(initialState)
-  const { messages } = state
+  const [messages, setMessages] = useState([])
+  const { name, textMessage } = state
 
   useEffect(() => {
     const { name, room } = queryString.parse(location.search)
@@ -43,20 +61,47 @@ const Chat = () => {
 
   useEffect(() => {
     socket.on('message', (message) => {
-      const updateMessages = [...messages, message]
-      setState({ ...state, messages: updateMessages })
+      setMessages((messages) => [...messages, message])
     })
   }, [])
 
+  const handleChangeMessage = (e) => {
+    const value = e.target.value
+    setState({ ...state, textMessage: value })
+  }
+
+  const handleSendMessage = () => {
+    if (textMessage) {
+      socket.emit('sendMessage', { textMessage })
+      return setState({ ...state, textMessage: '' })
+    }
+    return alert('input is empty')
+  }
+
   return (
     <div className={classes.root}>
-      {
-        messages.map((message, index) => {
-          return (
-            <Message key={index} message={message} />
-          )
-        })
-      }
+      <div className={classes.messageContainer}>
+        {
+          messages.map((message, index) => {
+            return (
+              <Message
+                key={index}
+                name={name}
+                message={message}
+                messages={messages}
+                index={index}
+              />
+            )
+          })
+        }
+      </div>
+      <div className={classes.wrapperSendingMessage}>
+        <SendingMessage
+          textMessage={textMessage}
+          handleChangeMessage={handleChangeMessage}
+          handleSendMessage={handleSendMessage}
+        />
+      </div>
     </div>
   )
 }
